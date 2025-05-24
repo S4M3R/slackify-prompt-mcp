@@ -5,56 +5,39 @@ import { z } from "zod";
 // Define our MCP agent with tools
 export class MyMCP extends McpAgent {
 	server = new McpServer({
-		name: "Authless Calculator",
+		name: "Slackify Prompt",
 		version: "1.0.0",
 	});
 
 	async init() {
 		// Simple addition tool
-		this.server.tool(
-			"add",
-			{ a: z.number(), b: z.number() },
-			async ({ a, b }) => ({
-				content: [{ type: "text", text: String(a + b) }],
-			})
-		);
+		this.server.prompt(
+			"review-code",
+			{ message: z.string(), language: z.string().optional() },
+			({ message, language = "English" }) => ({
+				messages: [{
+					role: "assistant",
+					content: {
+						type: "text",
+						text: `You are a Slack formatting assistant. You will receive the raw response from another AI. Your job is to transform it into a Slack-ready message that’s:
 
-		// Calculator tool with multiple operations
-		this.server.tool(
-			"calculate",
-			{
-				operation: z.enum(["add", "subtract", "multiply", "divide"]),
-				a: z.number(),
-				b: z.number(),
-			},
-			async ({ operation, a, b }) => {
-				let result: number;
-				switch (operation) {
-					case "add":
-						result = a + b;
-						break;
-					case "subtract":
-						result = a - b;
-						break;
-					case "multiply":
-						result = a * b;
-						break;
-					case "divide":
-						if (b === 0)
-							return {
-								content: [
-									{
-										type: "text",
-										text: "Error: Cannot divide by zero",
-									},
-								],
-							};
-						result = a / b;
-						break;
-				}
-				return { content: [{ type: "text", text: String(result) }] };
-			}
-		);
+- Very concise and to the point.
+- Written in ${language}.
+- Formatted with Slack markdown (e.g. *bold*, _italic_, • bullet points, 'inline code') where appropriate.
+- No unnecessary detail or fluff—focus only on the key points.
+
+Output only the formatted Slack message as string`
+					}
+				}, {
+					role: "user",
+					content: {
+						type: "text",
+						text: `Please slackify this message:\n\n${message}`
+					}
+				}]
+			})
+		)
+
 	}
 }
 
