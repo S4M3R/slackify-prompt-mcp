@@ -12,7 +12,7 @@ export class MyMCP extends McpAgent {
 	async init() {
 		// Simple addition tool
 		this.server.prompt(
-			"review-code",
+			"slackify-message",
 			{ message: z.string(), language: z.string().optional() },
 			({ message, language = "English" }) => ({
 				messages: [{
