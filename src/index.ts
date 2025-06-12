@@ -55,7 +55,7 @@ export default {
 		const authFromQuery = url.searchParams.get('auth');
 		const authFromHeader = request.headers.get('Authorization');
 		
-		if (authFromQuery !== 'true' && authFromHeader !== 'Bearer true') {
+		if (authFromQuery+"" !== 'true' && authFromHeader+"" !== 'Bearer true') {
 			return new Response(JSON.stringify({ 
 				error: 'Authentication required',
 				message: 'Please provide auth=true in query string or Authorization: Bearer true header'
