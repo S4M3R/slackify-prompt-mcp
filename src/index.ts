@@ -53,7 +53,7 @@ export default {
 		
 		// Check for auth parameter in URL query string or Authorization header
 		const authFromQuery = url.searchParams.get('auth');
-		const authFromHeader = request.headers.get('Authorization');
+		const authFromHeader = request.headers.get('authorization');
 		
 		if (authFromQuery+"" !== 'true' && authFromHeader+"" !== 'Bearer true') {
 			return new Response(JSON.stringify({ 
